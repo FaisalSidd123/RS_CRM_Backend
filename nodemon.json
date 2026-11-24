@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": ["data/*", "test-auth.ts"],
+  "exec": "node --import tsx src/server.ts"
+}

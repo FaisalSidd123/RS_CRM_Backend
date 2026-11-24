@@ -10,6 +10,7 @@ import { createVisitsRouter } from './routes/visits.js';
 import { createDealsRouter } from './routes/deals.js';
 import { usersRouter } from './routes/users.js';
 import { whatsappRouter } from './routes/whatsapp.js';
+import { authRouter } from './routes/auth.js';
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.get('/health', (req, res) => {
 });
 
 // Mount Routes
+app.use('/api/auth', authRouter);
 app.use('/api/webhook', createWebhookRouter(io));
 app.use('/api/leads', createLeadsRouter(io));
 app.use('/api/follow-ups', createFollowUpsRouter(io));
