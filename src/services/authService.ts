@@ -31,10 +31,14 @@ export function verifyPassword(password: string, hash: string, salt: string): bo
 function initSeedCredentials() {
   const defaultAccounts = [
     { id: 'usr-owner-1', password: 'admin123' },
+    { id: 'usr-owner-2', password: 'admin123' },
     { id: 'usr-mgr-1', password: 'manager123' },
     { id: 'usr-mgr-2', password: 'manager123' },
+    { id: 'usr-mgr-3', password: 'manager123' },
     { id: 'usr-agent-1', password: 'agent123' },
     { id: 'usr-agent-2', password: 'agent123' },
+    { id: 'usr-agent-3', password: 'agent123' },
+    { id: 'usr-agent-4', password: 'agent123' },
   ];
 
   for (const acc of defaultAccounts) {
@@ -100,7 +104,12 @@ export function verifyToken(token: string): any | null {
  * Login user
  */
 export function loginUser(email: string, password: string): { success: boolean; token?: string; user?: User; message: string } {
-  const user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  const cleanEmail = email.toLowerCase().trim();
+  const user = store.users.find(
+    (u) =>
+      u.email.toLowerCase() === cleanEmail ||
+      u.email.split('@')[0] === cleanEmail.split('@')[0]
+  );
   if (!user || !user.isActive) {
     return { success: false, message: 'Invalid email or password' };
   }
@@ -116,5 +125,51 @@ export function loginUser(email: string, password: string): { success: boolean; 
     token,
     user,
     message: `Logged in successfully as ${user.role}`,
+  };
+}
+
+/**
+ * Register / Create a new team account
+ */
+export function registerUser(params: {
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  password: string;
+}): { success: boolean; user?: User; token?: string; message: string } {
+  const { name, email, phone, role, password } = params;
+
+  if (!name || !email || !password || !role) {
+    return { success: false, message: 'Name, email, role, and password are required' };
+  }
+
+  const existing = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  if (existing) {
+    return { success: false, message: 'An account with this email already exists' };
+  }
+
+  const userId = `usr-${role}-${Date.now()}`;
+  const { hash, salt } = hashPassword(password);
+  credentialsMap.set(userId, { hash, salt });
+
+  const newUser: User = {
+    id: userId,
+    name,
+    email: email.toLowerCase(),
+    phone: phone || '0300-0000000',
+    role,
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  };
+
+  store.addUser(newUser);
+  const token = generateToken(newUser);
+
+  return {
+    success: true,
+    user: newUser,
+    token,
+    message: `Account created successfully for ${name} (${role})`,
   };
 }

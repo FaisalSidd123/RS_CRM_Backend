@@ -35,6 +35,7 @@ export function formatPakistaniPhone(raw: string): string {
 
 // Default Seed Users (3 Portals)
 const initialUsers: User[] = [
+  // 1. Owners / Admins
   {
     id: 'usr-owner-1',
     name: 'Imran Qureshi',
@@ -44,6 +45,16 @@ const initialUsers: User[] = [
     isActive: true,
     createdAt: new Date().toISOString(),
   },
+  {
+    id: 'usr-owner-2',
+    name: 'Tariq Mehmood',
+    email: 'tariq@propertyos.pk',
+    phone: '0300-9988112',
+    role: 'owner',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  // 2. Branch & Team Managers
   {
     id: 'usr-mgr-1',
     name: 'Sana Malik',
@@ -63,6 +74,16 @@ const initialUsers: User[] = [
     createdAt: new Date().toISOString(),
   },
   {
+    id: 'usr-mgr-3',
+    name: 'Zainab Raza',
+    email: 'zainab@propertyos.pk',
+    phone: '0322-1122445',
+    role: 'manager',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  // 3. Field Agents
+  {
     id: 'usr-agent-1',
     name: 'Bilal Ahmed',
     email: 'bilal@propertyos.pk',
@@ -76,6 +97,24 @@ const initialUsers: User[] = [
     name: 'Ayesha Khan',
     email: 'ayesha@propertyos.pk',
     phone: '0345-5544332',
+    role: 'agent',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'usr-agent-3',
+    name: 'Usman Ghani',
+    email: 'usman@propertyos.pk',
+    phone: '0331-7788990',
+    role: 'agent',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'usr-agent-4',
+    name: 'Hamza Ali',
+    email: 'hamza@propertyos.pk',
+    phone: '0315-6677889',
     role: 'agent',
     isActive: true,
     createdAt: new Date().toISOString(),
@@ -186,6 +225,13 @@ class StoreService {
     this.activityLogs.unshift(act);
     this.saveToDisk();
     return act;
+  }
+
+  addUser(user: User): User {
+    this.users.push(user);
+    this.logActivity(undefined, user.id, 'user_registered', `New staff member added: ${user.name} (${user.role})`);
+    this.saveToDisk();
+    return user;
   }
 
   // ==========================================================================

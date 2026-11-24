@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { loginUser } from '../services/authService.js';
+import { loginUser, registerUser } from '../services/authService.js';
 import { authenticateToken, AuthRequest } from '../middleware/authMiddleware.js';
 import { store } from '../services/storeService.js';
 
@@ -27,7 +27,41 @@ authRouter.post('/login', (req: Request, res: Response) => {
 });
 
 /**
- * 2. GET /api/auth/me
+ * 2. POST /api/auth/register
+ * Body: { name, email, phone, role: 'owner'|'manager'|'agent', password }
+ * Creates a new account in the system
+ */
+authRouter.post('/register', (req: Request, res: Response) => {
+  const { name, email, phone, role, password } = req.body;
+
+  if (!name || !email || !password || !role) {
+    res.status(400).json({
+      success: false,
+      message: 'name, email, role, and password are required fields',
+    });
+    return;
+  }
+
+  const validRoles = ['owner', 'manager', 'agent'];
+  if (!validRoles.includes(role)) {
+    res.status(400).json({
+      success: false,
+      message: `Invalid role '${role}'. Must be one of: owner, manager, agent`,
+    });
+    return;
+  }
+
+  const result = registerUser({ name, email, phone, role, password });
+  if (!result.success) {
+    res.status(400).json(result);
+    return;
+  }
+
+  res.status(201).json(result);
+});
+
+/**
+ * 3. GET /api/auth/me
  * Protected: Requires Authorization: Bearer <token>
  */
 authRouter.get('/me', authenticateToken, (req: AuthRequest, res: Response) => {
