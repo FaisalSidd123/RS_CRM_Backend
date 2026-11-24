@@ -121,45 +121,8 @@ const initialUsers: User[] = [
   },
 ];
 
-// Default Properties
-const initialProperties: Property[] = [
-  {
-    id: 'prop-1',
-    propertyCode: 'PK-DHA-0142',
-    title: 'Brand New 500 Sq Yd Modern Bungalow',
-    purpose: 'sale',
-    type: 'House',
-    city: 'Karachi',
-    areaSociety: 'DHA Phase 6',
-    blockPhase: 'Phase 6, Bukhari Commercial Lane 4',
-    price: 85000000, // 8.5 Crore
-    size: 500,
-    sizeUnit: 'sq yd',
-    bedrooms: 5,
-    bathrooms: 6,
-    ownerName: 'Tariq Mehmood',
-    ownerPhone: '0300-9988112',
-    status: 'available',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'prop-2',
-    propertyCode: 'PK-DHA-0210',
-    title: '1 Kanal Prime Residential Plot, Sector J',
-    purpose: 'sale',
-    type: 'Plot',
-    city: 'Lahore',
-    areaSociety: 'DHA Phase 6',
-    blockPhase: 'Sector J, Plot 412',
-    price: 54000000, // 5.4 Crore
-    size: 1,
-    sizeUnit: 'Kanal',
-    ownerName: 'Kamran Ashraf',
-    ownerPhone: '0322-8877665',
-    status: 'available',
-    createdAt: new Date().toISOString(),
-  },
-];
+// Default Properties (Clean slate for real agency listings)
+const initialProperties: Property[] = [];
 
 class StoreService {
   users: User[] = initialUsers;
