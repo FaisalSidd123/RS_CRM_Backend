@@ -91,7 +91,32 @@ export function createLeadsRouter(io: SocketIOServer) {
     res.json({ success: true, lead: updated });
   });
 
-  // 6. POST /api/leads/simulate (Local test simulator for incoming WhatsApp leads)
+  // 6. POST /api/leads/:id/activities (Save interaction notes, calls, feedback)
+  router.post('/:id/activities', (req: Request, res: Response) => {
+    const { type, description, outcome, authorName } = req.body;
+    if (!description) {
+      res.status(400).json({ success: false, message: 'Description/Note is required' });
+      return;
+    }
+
+    const activity = store.addLeadActivity(req.params.id as string, {
+      type: type || 'Note',
+      description,
+      outcome,
+      authorName: authorName || 'Staff',
+    });
+
+    if (!activity) {
+      res.status(404).json({ success: false, message: 'Lead not found' });
+      return;
+    }
+
+    const lead = store.getLeadById(req.params.id as string);
+    io.emit('lead_updated', { lead });
+    res.json({ success: true, activity, activities: lead?.activities || [] });
+  });
+
+  // 7. POST /api/leads/simulate (Local test simulator for incoming WhatsApp leads)
   router.post('/simulate', (req: Request, res: Response) => {
     const { name, phone, message } = req.body;
 

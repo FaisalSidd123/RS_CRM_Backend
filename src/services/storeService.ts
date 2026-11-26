@@ -225,6 +225,15 @@ class StoreService {
       duplicateOfId: existing ? existing.id : undefined,
       createdAt: now,
       updatedAt: now,
+      activities: [
+        {
+          id: `act-wa-${Date.now()}`,
+          type: 'WhatsApp',
+          description: `WhatsApp: "${messageBody}"`,
+          createdAt: now,
+          authorName: 'Meta WhatsApp Engine',
+        },
+      ],
     };
 
     this.leads.unshift(lead);
@@ -289,6 +298,7 @@ class StoreService {
     // Acquire Lock
     lead.isLocked = true;
     lead.claimedByManagerId = managerId;
+    (lead as any).claimedByManagerName = manager.name;
     lead.lockedAt = new Date().toISOString();
     if (lead.status === 'new') {
       lead.status = 'contacted';
@@ -318,6 +328,7 @@ class StoreService {
 
     lead.isLocked = false;
     lead.claimedByManagerId = undefined;
+    (lead as any).claimedByManagerName = undefined;
     lead.lockedAt = undefined;
     lead.updatedAt = new Date().toISOString();
 
@@ -335,6 +346,21 @@ class StoreService {
     this.logActivity(lead.id, userId, 'lead_updated', `Lead updated: ${Object.keys(updates).join(', ')}`);
     this.saveToDisk();
     return lead;
+  }
+
+  addLeadActivity(leadId: string, activity: { type: string; description: string; outcome?: string; authorName: string }) {
+    const lead = this.getLeadById(leadId);
+    if (!lead) return null;
+    if (!lead.activities) lead.activities = [];
+    const newAct = {
+      id: `act-${Date.now()}`,
+      ...activity,
+      createdAt: new Date().toISOString(),
+    };
+    lead.activities.unshift(newAct);
+    this.logActivity(lead.id, undefined, 'lead_activity_logged', `${activity.authorName}: [${activity.type}] ${activity.description}`);
+    this.saveToDisk();
+    return newAct;
   }
 
   // ==========================================================================

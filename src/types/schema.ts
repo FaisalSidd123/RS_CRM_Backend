@@ -58,6 +58,15 @@ export interface Lead {
   // Zero-Miss Follow-up Tracking
   nextFollowUpAt?: string;
   
+  activities?: Array<{
+    id: string;
+    type: string;
+    description: string;
+    outcome?: string;
+    createdAt: string;
+    authorName: string;
+  }>;
+  
   // Duplicate check
   isDuplicate: boolean;
   duplicateOfId?: string;
